@@ -1,0 +1,20 @@
+{
+  "name": "jarvis",
+  "version": "1.0.0",
+  "description": "Jarvis: agente de conteúdo pessoal. Pesquisa o que está em alta, planeja a semana, cria reels e carrosséis na sua marca, publica no Instagram com a sua aprovação e aprende com as métricas de cada post. Grátis (no seu computador + Telegram) ou na nuvem (+ WhatsApp).",
+  "keywords": [
+    "instagram",
+    "conteudo",
+    "agente",
+    "reels",
+    "carrossel",
+    "whatsapp",
+    "telegram"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "JoaoVitorOCS",
+    "url": "https://github.com/JoaoVitorOCS"
+  },
+  "homepage": "https://github.com/JoaoVitorOCS/jarvis"
+}

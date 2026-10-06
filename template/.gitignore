@@ -1,0 +1,12 @@
+.env
+dados/.*
+dados/publico/
+dados/agenda.json
+projetos/*/renders/
+projetos/*/build/
+projetos/*/reel/sfx/
+projetos/*/.hospedado.json
+kit/musica/*.wav
+kit/musica/*.mp3
+__pycache__/
+.DS_Store

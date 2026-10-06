@@ -1,0 +1,8 @@
+{"gancho": ["3 ferramentas", "que *mudaram* a", "minha semana"], "subgancho": "e quando usar cada uma",
+ "cards": [
+  {"rotulo": "1/3 · pesquisa", "titulo": "last30days", "texto": "mostra o que o seu nicho está comentando agora", "nota": "→ use antes de escolher a pauta"},
+  {"rotulo": "2/3 · texto", "titulo": "no-ai-slop", "texto": "tira a cara de IA do seu texto", "nota": "→ use em toda legenda"},
+  {"rotulo": "3/3 · vídeo", "titulo": "hyperframes", "texto": "vídeo feito em HTML, renderizado pelo agente", "nota": "→ use quando quiser motion sem editor"}
+ ],
+ "fecho": ["Salva pra testar", "na *sua semana.*"], "botao": "Salvar", "botao_feito": "Salvo ✓",
+ "tags": {"formato": "lista", "gancho": "numero"}, "lufs": -16}

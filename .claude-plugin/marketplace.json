@@ -1,0 +1,24 @@
+{
+  "name": "jarvis",
+  "owner": {
+    "name": "JoaoVitorOCS",
+    "url": "https://github.com/JoaoVitorOCS"
+  },
+  "metadata": {
+    "description": "Marketplace do Jarvis, agente de conteúdo pessoal para Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "jarvis",
+      "description": "Agente de conteúdo pessoal: pesquisa, plano, criação (reels e carrosséis em código), publicação no Instagram e aprendizado com as métricas. Grátis (local + Telegram) ou na nuvem (+ WhatsApp).",
+      "version": "1.0.0",
+      "source": "./",
+      "category": "productivity",
+      "author": {
+        "name": "JoaoVitorOCS",
+        "url": "https://github.com/JoaoVitorOCS"
+      },
+      "homepage": "https://github.com/JoaoVitorOCS/jarvis"
+    }
+  ]
+}

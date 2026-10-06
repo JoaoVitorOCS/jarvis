@@ -1,0 +1,9 @@
+# Caddy: HTTPS automático (Let's Encrypt) na frente da ponte. Troque o domínio.
+# O DNS do domínio precisa apontar (registro A) para o IP do servidor ANTES de subir o Caddy.
+jarvis.seudominio.com {
+	handle_path /publico/* {
+		root * PASTA_DO_JARVIS/dados/publico
+		file_server
+	}
+	reverse_proxy 127.0.0.1:8787
+}

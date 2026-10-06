@@ -1,0 +1,17 @@
+# systemd: mantém a ponte do Jarvis no ar no servidor (ou num Linux em casa).
+# instalar.sh copia para /etc/systemd/system/jarvis.service com o usuário e a pasta certos.
+[Unit]
+Description=Jarvis (ponte de conteúdo)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=USUARIO
+WorkingDirectory=PASTA_DO_JARVIS
+EnvironmentFile=PASTA_DO_JARVIS/.env
+ExecStart=/usr/bin/python3 PASTA_DO_JARVIS/scripts/jarvis_bridge.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

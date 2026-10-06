@@ -1,0 +1,13 @@
+{
+  "nome": "Seu Nome",
+  "arroba": "@seuperfil",
+  "frase": "o que você faz, em uma frase",
+  "tema_padrao": "claro",
+  "fontes": {"titulo": "Space Grotesk", "texto": "Inter", "mono": "IBM Plex Mono", "destaque": "Fraunces"},
+  "temas": {
+    "claro":  {"bg": "#FAFAF7", "surface": "#FFFFFF", "ink": "#111111", "muted": "#66665F", "acc": "#2F6BFF", "acc_ink": "#FFFFFF", "acc_text": "#2453CC"},
+    "escuro": {"bg": "#0E1116", "surface": "#171B22", "ink": "#F5F5F5", "muted": "#8B93A1", "acc": "#6EE7B7", "acc_ink": "#0E1116", "acc_text": "#6EE7B7"}
+  },
+  "avatar": "",
+  "logo": ""
+}

@@ -1,0 +1,7 @@
+{"tema": "claro", "legenda_arquivo": "legenda.txt", "tags": {"formato": "lista", "gancho": "numero"},
+ "slides": [
+  {"layout": "capa", "kicker": "exemplo", "title": "3 *coisas* que eu automatizei", "sub": "e quanto tempo cada uma me devolveu"},
+  {"layout": "lista", "title": "O que mudou", "items": [{"t": "Pesquisa de pauta", "d": "**2 h** → 10 min"}, {"t": "Legenda", "d": "rascunho em 1 min, eu reviso"}, {"t": "Relatório", "d": "sai sozinho toda segunda"}]},
+  {"layout": "terminal", "title": "Como eu peço", "card": {"type": "terminal", "title": "Claude Code", "lines": ["> pesquise o que está em alta no meu nicho", "# lendo 30 dias de posts...", "✓ 12 pautas salvas"]}},
+  {"layout": "cta", "title": "Salva pra ==testar== na sua semana", "action": "Salvar"}
+ ]}
