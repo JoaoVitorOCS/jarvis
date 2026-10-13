@@ -10,8 +10,8 @@
   "plugins": [
     {
       "name": "jarvis",
-      "description": "Agente de conteúdo pessoal: pesquisa, plano, criação (reels e carrosséis em código), publicação no Instagram e aprendizado com as métricas. Grátis (local + Telegram) ou na nuvem (+ WhatsApp).",
-      "version": "1.0.0",
+      "description": "Agente de conteúdo pessoal: pesquisa, plano, criação (reels e carrosséis em código), publicação no Instagram e no YouTube Shorts e aprendizado com as métricas. Grátis (local + Telegram) ou na nuvem (+ WhatsApp).",
+      "version": "1.1.0",
       "source": "./",
       "category": "productivity",
       "author": {

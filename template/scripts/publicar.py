@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
-"""Publicação no Instagram (Composio): prepara, hospeda, publica (reel, carrossel ou foto) e manda o mesmo conteúdo
-para o story. Também agenda na agenda da ponte (dados/agenda.json).
+"""Publicação no Instagram (Composio) e no YouTube Shorts (API do YouTube, seu projeto no Google Cloud): prepara,
+hospeda, publica (reel, carrossel ou foto), manda o mesmo conteúdo para o story e sobe o reel como Short.
+Também agenda na agenda da ponte (dados/agenda.json).
 
 Cada post é uma pasta em projetos/<slug>/ com um publicacao.json:
   {"tipo": "reel" | "carrossel" | "foto",
    "midia": ["renders/master.mp4"]          (reel: 1 vídeo; carrossel: 2 a 10 imagens; foto: 1 imagem),
    "capa": "renders/capa.jpg"               (opcional, só reel),
    "legenda_arquivo": "legenda.txt",
-   "story": true}                           (padrão: o reel/foto/1º slide também vai para o story)
+   "story": true,                           (padrão: o reel/foto/1º slide também vai para o story)
+   "instagram": false,                      (opcional: Short sem post no Instagram)
+   "youtube": {"titulo": "...",             (opcional, só reel: liga o Short; até 100 caracteres)
+               "descricao_arquivo": "descricao-youtube.txt",
+               "tags": ["..."],
+               "midia": "renders/master-yt.mp4"}}   (opcional: render próprio, ex. com o CTA "inscreva-se";
+                                                     sem ele, o Short sobe o mesmo vídeo do Instagram)
 
 Uso (da raiz da pasta do Jarvis):
   python3 scripts/publicar.py preparar projetos/<slug>                 # converte e hospeda → projetos/<slug>/.hospedado.json
   python3 scripts/publicar.py ensaio   projetos/<slug>                 # cria os containers SEM publicar (expiram em 24 h)
-  python3 scripts/publicar.py publicar projetos/<slug> --confirmo      # publica UMA vez (só com aprovação do dono)
+  python3 scripts/publicar.py publicar projetos/<slug> --confirmo      # publica UMA vez por rede (só com aprovação do dono)
+      [--so instagram|youtube]                                          # só uma das redes
   python3 scripts/publicar.py agendar  projetos/<slug> 2026-10-07T12:07:00-03:00
   python3 scripts/publicar.py limpar   projetos/<slug>                 # apaga a mídia hospedada depois de publicado
 
@@ -32,6 +40,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import composio_ig as C  # noqa: E402
+import youtube as Y  # noqa: E402
 
 ROOT = C.ROOT
 LOG = ROOT / "dados" / "publicados.jsonl"
@@ -46,9 +55,13 @@ def load(proj):
     return cfg
 
 
+def ffprobe(p):
+    return json.loads(subprocess.run(["ffprobe", "-v", "error", "-print_format", "json", "-show_format", "-show_streams", str(p)],
+                                     capture_output=True, text=True, check=True).stdout)
+
+
 def probe(p):
-    d = json.loads(subprocess.run(["ffprobe", "-v", "error", "-print_format", "json", "-show_format", "-show_streams", str(p)],
-                                  capture_output=True, text=True, check=True).stdout)
+    d = ffprobe(p)
     return float(d["format"]["duration"]), any(s["codec_type"] == "audio" for s in d["streams"])
 
 
@@ -102,6 +115,8 @@ def unhost(urls):
 
 def preparar(proj):
     cfg = load(proj)
+    if not cfg.get("instagram", True):
+        sys.exit("Só YouTube: não precisa preparar nem hospedar (o Short sobe direto do arquivo).")
     d = cfg["_dir"]
     midia = [d / m for m in cfg["midia"]]
     if cfg["tipo"] == "reel":
@@ -166,13 +181,17 @@ def story(cfg, ig, h):
     print("STORY PUBLICADO" if r.get("successful") else f"STORY FALHOU: {r.get('error')}")
 
 
-def publicar(proj, confirmo):
-    if not confirmo:
-        sys.exit("Publicar exige --confirmo (e a aprovação do dono na conversa).")
-    cfg = load(proj)
+def registrar(rec):
+    LOG.parent.mkdir(parents=True, exist_ok=True)
+    with LOG.open("a") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def publicar_instagram(cfg):
     marker = cfg["_dir"] / ".publicado.json"
     if marker.exists():
-        sys.exit(f"Já publicado: {marker.read_text()}")  # nunca publica duas vezes
+        print(f"Instagram: já publicado ({marker.read_text()})")  # nunca publica duas vezes
+        return
     C.me()
     ig = "me"  # a ferramenta do Composio aceita "me" (testado: vale para qualquer conta conectada)
     cid, h = containers(cfg, ig)
@@ -181,15 +200,79 @@ def publicar(proj, confirmo):
         sys.exit(f"FALHOU: {r.get('error')}")
     mid = (r.get("data") or {}).get("id")
     last = (C.ok(C.execute("INSTAGRAM_GET_USER_MEDIA", {"limit": 1})).get("data") or [{}])[0]
-    rec = {"data": time.strftime("%Y-%m-%dT%H:%M:%S"), "media_id": mid, "permalink": last.get("permalink"), "tipo": cfg["tipo"],
-           "projeto": cfg["_dir"].name, "tags": cfg.get("tags", {})}
+    rec = {"data": time.strftime("%Y-%m-%dT%H:%M:%S"), "rede": "instagram", "media_id": mid, "permalink": last.get("permalink"),
+           "tipo": cfg["tipo"], "projeto": cfg["_dir"].name, "tags": cfg.get("tags", {})}
     marker.write_text(json.dumps(rec, ensure_ascii=False))
-    LOG.parent.mkdir(parents=True, exist_ok=True)
-    with LOG.open("a") as f:
-        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    registrar(rec)
     print("PUBLICADO", rec.get("permalink") or mid)
     if cfg.get("story", True):
         story(cfg, ig, h)
+
+
+def checar_youtube(cfg):
+    """Confere o Short antes de subir: reel, título, descrição, vídeo vertical de até 3 min. Devolve (vídeo, título, descrição)."""
+    yt, d = cfg["youtube"], cfg["_dir"]
+    if cfg["tipo"] != "reel":
+        sys.exit("YouTube Shorts só para reel (vídeo).")
+    titulo = (yt.get("titulo") or "").strip()
+    if not titulo or len(titulo) > 100:
+        sys.exit(f"youtube.titulo vazio ou com mais de 100 caracteres ({len(titulo)}).")
+    desc = (d / yt.get("descricao_arquivo", "descricao-youtube.txt")).read_text().strip()
+    video = d / (yt.get("midia") or cfg["midia"][0])
+    info = ffprobe(video)
+    v = next(s for s in info["streams"] if s["codec_type"] == "video")
+    dur = float(info["format"]["duration"])
+    if dur > Y.MAX_SHORT:
+        sys.exit(f"Vídeo com {dur:.0f} s: acima de {Y.MAX_SHORT} s o YouTube não trata como Short.")
+    if int(v["height"]) < int(v["width"]):
+        sys.exit("Vídeo não é vertical: o YouTube só trata como Short vídeo vertical (ou quadrado) de até 3 min.")
+    return video, titulo, desc
+
+
+def publicar_youtube(cfg):
+    marker = cfg["_dir"] / ".publicado-youtube.json"
+    if marker.exists():
+        print(f"YouTube: já publicado ({marker.read_text()})")
+        return
+    video, titulo, desc = checar_youtube(cfg)
+    Y.eu()  # confirma o token e o canal antes de enviar
+    vid = Y.achar_por_titulo(titulo)  # já está no canal (ex.: execução repetida)? não sobe de novo
+    if vid:
+        print(f"YouTube: Short já no ar (https://youtube.com/shorts/{vid})")
+    else:
+        vid = Y.upload(video, titulo, desc, tags=cfg["youtube"].get("tags", []))
+        if cfg.get("capa"):
+            try:
+                Y.capa(vid, cfg["_dir"] / cfg["capa"])
+            except SystemExit as e:
+                print(f"Capa do Short não enviada: {e}")
+    rec = {"data": time.strftime("%Y-%m-%dT%H:%M:%S"), "rede": "youtube", "video_id": vid,
+           "permalink": f"https://youtube.com/shorts/{vid}", "tipo": "short", "projeto": cfg["_dir"].name, "tags": cfg.get("tags", {})}
+    marker.write_text(json.dumps(rec, ensure_ascii=False))
+    registrar(rec)
+    print("SHORT PUBLICADO", rec["permalink"], "(confira em alguns minutos: python3 scripts/youtube.py status", vid + ")")
+
+
+def publicar(proj, confirmo, so=None):
+    if not confirmo:
+        sys.exit("Publicar exige --confirmo (e a aprovação do dono na conversa).")
+    cfg = load(proj)
+    redes = []
+    if cfg.get("instagram", True) and so in (None, "instagram"):
+        redes.append(("Instagram", publicar_instagram))
+    if cfg.get("youtube") and so in (None, "youtube"):
+        redes.append(("YouTube", publicar_youtube))
+    if not redes:
+        sys.exit("Nada a publicar: confira \"instagram\", \"youtube\" no publicacao.json e o --so.")
+    falhas = []
+    for nome, fn in redes:  # uma rede falhar não impede a outra
+        try:
+            fn(cfg)
+        except SystemExit as e:
+            falhas.append(f"{nome}: {e}")
+            print(f"{nome} FALHOU: {e}")
+    if falhas:
+        sys.exit("\n".join(falhas))
 
 
 def agendar(proj, quando):
@@ -211,11 +294,16 @@ def main(a):
         preparar(proj)
     elif cmd == "ensaio":
         cfg = load(proj)
-        C.me()
-        cid, _ = containers(cfg, "me")
-        print(f"ENSAIO OK: container {cid} pronto, nada publicado (expira em 24 h).")
+        if cfg.get("instagram", True):
+            C.me()
+            cid, _ = containers(cfg, "me")
+            print(f"ENSAIO OK no Instagram: container {cid} pronto, nada publicado (expira em 24 h).")
+        if cfg.get("youtube"):
+            video, titulo, _ = checar_youtube(cfg)
+            Y.eu()
+            print(f"ENSAIO OK no YouTube: {video.name} cabe num Short, título \"{titulo}\" (a API não tem rascunho; nada foi enviado).")
     elif cmd == "publicar":
-        publicar(proj, "--confirmo" in a)
+        publicar(proj, "--confirmo" in a, a[a.index("--so") + 1] if "--so" in a else None)
     elif cmd == "agendar":
         agendar(proj, a[2])
     elif cmd == "limpar":

@@ -1,12 +1,14 @@
 {
   "name": "jarvis",
-  "version": "1.0.0",
-  "description": "Jarvis: agente de conteúdo pessoal. Pesquisa o que está em alta, planeja a semana, cria reels e carrosséis na sua marca, publica no Instagram com a sua aprovação e aprende com as métricas de cada post. Grátis (no seu computador + Telegram) ou na nuvem (+ WhatsApp).",
+  "version": "1.1.0",
+  "description": "Jarvis: agente de conteúdo pessoal. Pesquisa o que está em alta, planeja a semana, cria reels e carrosséis na sua marca, publica no Instagram e no YouTube Shorts com a sua aprovação e aprende com as métricas de cada post. Grátis (no seu computador + Telegram) ou na nuvem (+ WhatsApp).",
   "keywords": [
     "instagram",
     "conteudo",
     "agente",
     "reels",
+    "youtube",
+    "shorts",
     "carrossel",
     "whatsapp",
     "telegram"

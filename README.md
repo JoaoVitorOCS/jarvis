@@ -1,6 +1,6 @@
 # Jarvis · agente de conteúdo pessoal para Claude Code
 
-Um agente que trabalha no seu Instagram com você: **pesquisa** o que está em alta no seu nicho, **planeja** a semana,
+Um agente que trabalha no seu Instagram (e no seu canal do YouTube, com Shorts) com você: **pesquisa** o que está em alta no seu nicho, **planeja** a semana,
 **cria** reels e carrosséis na sua marca (em código, sem editor), **publica** só com a sua aprovação e **aprende** com
 as métricas de cada post, guardando o que funciona num caderno de regras por rede.
 
@@ -26,7 +26,7 @@ Precisa do [Claude Code](https://claude.com/claude-code) e de uma assinatura do 
 /plugin install jarvis@jarvis
 ```
 Depois, numa conversa nova: **`/jarvis-setup`**. O onboarding pergunta sobre você e a sua marca, monta a sua pasta
-do Jarvis e guia cada conexão (Instagram, hospedagem, Telegram ou WhatsApp, servidor), conferindo cada passo.
+do Jarvis e guia cada conexão (Instagram, YouTube, hospedagem, Telegram ou WhatsApp, servidor), conferindo cada passo.
 
 ## O que vem no pacote
 | Skill | Faz |
@@ -35,11 +35,16 @@ do Jarvis e guia cada conexão (Instagram, hospedagem, Telegram ou WhatsApp, ser
 | `/jarvis-pesquisa` | o que está em alta no nicho (Instagram, last30days, web) → pautas com prova |
 | `/jarvis-plano` | grade da semana, uma variável testada por post |
 | `/jarvis-criar` | roteiro aprovado → reel editorial (Hyperframes) ou carrossel (HTML → PNG) na sua marca |
-| `/jarvis-publicar` | prepara, ensaia, publica ou agenda + story automático |
+| `/jarvis-publicar` | prepara, ensaia, publica ou agenda + story automático + o reel como YouTube Short |
 | `/jarvis-insights` | métricas → caderno de regras por rede → próximos testes |
 
 `template/` vira a sua pasta: ponte do celular (`jarvis_bridge.py`), scripts de publicação e métricas, kits de reel e
 carrossel que leem as suas cores e fontes, e os serviços do Mac e do servidor. `docs/` tem o passo a passo de cada serviço.
+
+## Novidades
+- **1.1.0:** YouTube Shorts. O mesmo reel sai como Short, com título e descrição próprios, pelo seu projeto no Google
+  Cloud (grátis; `docs/YOUTUBE.md`). Render próprio por rede (ex.: fecho com "inscreva-se"), publicação uma vez só por
+  rede e conferência de que o vídeo caiu na aba Shorts.
 
 ## Princípios
 - Nada sai sem a sua aprovação do conteúdo exato.

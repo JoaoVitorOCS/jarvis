@@ -1,6 +1,6 @@
 ---
 name: jarvis-setup
-description: Onboarding do Jarvis — monta, do zero, um agente de conteúdo pessoal que pesquisa o que está em alta, planeja, cria (reels e carrosséis em código), publica no Instagram e aprende com as métricas de cada post. Duas versões — grátis (no seu computador, comandado pelo Telegram) ou paga (num servidor na nuvem, comandado pelo WhatsApp). Use quando a pessoa pedir para instalar, configurar ou começar o Jarvis, "montar meu agente", "onboarding", ou quando não existir uma pasta do Jarvis configurada.
+description: Onboarding do Jarvis — monta, do zero, um agente de conteúdo pessoal que pesquisa o que está em alta, planeja, cria (reels e carrosséis em código), publica no Instagram e no YouTube Shorts e aprende com as métricas de cada post. Duas versões — grátis (no seu computador, comandado pelo Telegram) ou paga (num servidor na nuvem, comandado pelo WhatsApp). Use quando a pessoa pedir para instalar, configurar ou começar o Jarvis, "montar meu agente", "onboarding", ou quando não existir uma pasta do Jarvis configurada.
 ---
 
 # Onboarding do Jarvis
@@ -66,6 +66,16 @@ A conta precisa ser **profissional** (Criador ou Empresa; no app: Configuraçõe
 2. `python3 scripts/composio_ig.py conectar` → a pessoa abre o link e autoriza o Instagram.
 3. Conferir: `python3 scripts/composio_ig.py eu` precisa mostrar o @ certo. Não siga sem isso.
 
+## 4b. YouTube Shorts (opcional, grátis)
+Pergunte se a pessoa quer os reels também como Shorts no canal dela. Se sim, siga `PLUGIN/docs/YOUTUBE.md`:
+1. Projeto no Google Cloud → ativar a **YouTube Data API v3** → tela de consentimento **Externo** e **publicada
+   ("Em produção")**, senão o login cai a cada 7 dias.
+2. Credencial **ID do cliente OAuth → App para computador** → `YOUTUBE_CLIENT_ID` e `YOUTUBE_CLIENT_SECRET` no `.env`.
+3. `python3 scripts/youtube.py login` → a pessoa escolhe a conta **e o canal**. Conferir: `python3 scripts/youtube.py eu`
+   precisa mostrar o canal certo. Pergunte o idioma e a categoria do canal (`YOUTUBE_IDIOMA`, `YOUTUBE_CATEGORIA`).
+4. Avise: até a **auditoria da API** sair (formulário no passo 3 do doc), todo Short sobe como privado. Ajude a
+   preencher o formulário agora; enquanto isso, ela publica os privados à mão no Studio.
+
 ## 5. Hospedagem da mídia (a API do Instagram só aceita link público)
 - **Grátis:** Vercel Blob (`PLUGIN/docs/HOSPEDAGEM.md`): conta na Vercel → Storage → Blob → criar → copiar o
   `BLOB_READ_WRITE_TOKEN` para o `.env` (`HOSPEDAGEM=vercel`) → `npm i -g vercel`.
@@ -108,6 +118,7 @@ Pergunte quais instalar (AskUserQuestion, multiSelect) e mostre os comandos `/pl
 ## Checklist final (mostre marcado)
 - [ ] `marca/marca.json`, `marca/voz.md` e `CLAUDE.md` preenchidos e aprovados
 - [ ] `composio_ig.py eu` mostra o @ certo
+- [ ] (se quis Shorts) `youtube.py eu` mostra o canal certo e o app está "Em produção"
 - [ ] hospedagem testada (o `preparar` devolveu URLs)
 - [ ] canal responde ao /status com a senha
 - [ ] serviço sobe sozinho (reinicie o computador ou o servidor e confira)

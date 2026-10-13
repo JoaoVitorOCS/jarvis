@@ -1,6 +1,6 @@
 # {{NOME_DO_JARVIS}} · agente de conteúdo de {{NOME}}
 
-Pasta de trabalho do Jarvis: pesquisa o que está em alta, planeja, cria, publica (com aprovação) e aprende com as
+Pasta de trabalho do Jarvis: pesquisa o que está em alta, planeja, cria, publica no Instagram e no YouTube Shorts (com aprovação) e aprende com as
 métricas de cada post. Montado pelo plugin `jarvis` (onboarding: `/jarvis-setup`).
 
 ## Quem sou

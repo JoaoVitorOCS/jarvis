@@ -34,4 +34,5 @@ Leia `CLAUDE.md`, `marca/marca.json`, `marca/voz.md` e `cadernos/instagram.md`. 
 3. Corrija estouros (corte texto ou use `"size": "md"`) e mostre a folha.
 
 ## 3. Entrega
-Mostre o arquivo final, a legenda e o `publicacao.json` (criado automaticamente). Com a aprovação, siga para o `/jarvis-publicar`.
+Mostre o arquivo final, a legenda e o `publicacao.json` (criado automaticamente). Reel e YouTube conectado: proponha
+também o bloco `youtube` do Short (título até 100 caracteres pensado para busca, descrição curta, 3 a 5 tags), aprovado junto. Com a aprovação, siga para o `/jarvis-publicar`.
